@@ -16,7 +16,7 @@ Route::view('/example-auth', 'example-auth');
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function(){
-    Route::middleware([])->group(function(){
+    Route::middleware(['guest'])->group(function(){
         Route::controller(AuthController::class)->group(function(){
             Route::get('/login', 'loginForm')->name('login');
             Route::post('/login', 'loginHandler')->name('login_handler');
@@ -24,7 +24,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         });
     });
 
-    Route::middleware([])->group(function(){
+    Route::middleware(['auth'])->group(function(){
         Route::controller(AdminController::class)->group(function(){
             Route::get('/dashboard', 'adminDashboard')->name('dashboard');
             Route::post('/logout', 'logoutHandler')->name('logout');
