@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use App\Helpers\Cmail;
+use Illuminate\Testing\Fluent\Concerns\Has;
 
 class AuthController extends Controller
 {
@@ -141,6 +142,72 @@ class AuthController extends Controller
             return redirect()->route('admin.forgot')->with('success', 'We have a e-mailed your password reset link.'); 
         }else{
             return redirect()->route('admin.forgot')->with('fail', 'Somthing went wrong. Resetting link not sent. Try again later.');
+        }
+    }
+
+    public function resetForm(Request $request, $token = null){
+        //check if this token exists
+        $isTokenExists = DB::table('password_reset_tokens')
+                        ->where('token', $token)
+                        ->first();
+
+        if(!$isTokenExists){
+            return redirect()->route('admin.forgot')->with('fail', 'Invalid token. Request another reset password link.');
+        }else{
+            $data = [
+                'pageTitle' => 'Reset Password',
+                'token' => $token,
+            ];
+
+            return view('back.pages.auth.reset', $data);
+        }
+    }
+
+    public function resetPasswordHandler(Request $request){
+        //validate form
+        $request->validate([
+            'new_password' => 'required|min:5|required_with:new_password_confirmation|same:new_password_confirmation',
+            'new_password_confirmation' => 'required',
+        ]);
+
+        $dbToken = DB::table('password_reset_tokens')
+                    ->where('token', $request->token)
+                    ->first();
+
+        //Get user details
+        $user = User::where('email', $dbToken->email)->first();
+
+        //Update user password
+        User::where('email', $user->email)->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        //Send notifiacation email to this user email address that contains new password
+        $data = array(
+            'user' =>$user,
+            'new_password' => $request->new_password,
+        );
+
+        $mail_body = view('email-templates.password-changes-template', $data)->render();
+
+        $emailConfig = array(
+            'recipient_address' =>$user->email,
+            'recipient_name' => $user->name,
+            'subject' => 'Password changed seccessfully',
+            'body' => $mail_body,
+        );
+
+        if(Cmail::send($emailConfig)){
+            //Delete token from DB
+            DB::table('password_reset_tokens')->where([
+                'email' => $dbToken->email,
+                'token' => $dbToken->token,
+            ])->delete();
+
+            return redirect()->route('admin.login')->with('success', 'Done!, Your password has been changed successfully. Use your new password to login into system.');
+        }else{
+            return redirect()->route('admin.reset_password_form', ['token' => $dbToken->token])->with
+            ('fail', 'Something went wrong. Try again later.');
         }
     }
 }
