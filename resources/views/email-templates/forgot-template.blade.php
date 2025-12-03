@@ -18,6 +18,9 @@
                     style="background:#007bff; color:#ffffff; padding:12px 20px; text-decoration:none; border-radius:4px; font-weight:bold;">
                     Reset Password
                 </a>
+                <p>
+                    This link is valid for 15 minutes.
+                </p>
             </td>
         </tr>
 
