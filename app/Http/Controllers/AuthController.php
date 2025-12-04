@@ -88,12 +88,12 @@ class AuthController extends Controller
     {
         //validate form 
         $request->validate([
-            'email' =>'required|email|exists:users,email',
-        ],[
+            'email' => 'required|email|exists:users,email',
+        ], [
             'email.required' => 'The :attribute is required',
             'email.email' => 'Invalid email address',
             'email.exists' => 'We can not find a user with this email address',
-        ]); 
+        ]);
 
         //get user details
         $user = User::where('email', $request->email)->first();
@@ -103,20 +103,20 @@ class AuthController extends Controller
 
         //Check if there is an existing token
         $oldToken = DB::table('password_reset_tokens')
-                    ->where('email', $user->email)
-                    ->first();
-        if($oldToken){
+            ->where('email', $user->email)
+            ->first();
+        if ($oldToken) {
             //Update existing token
             DB::table('password_reset_tokens')
                 ->where('email', $user->email)
                 ->update([
-                    'token' =>$token,
+                    'token' => $token,
                     'created_at' => Carbon::now(),
                 ]);
-        }else{
+        } else {
             DB::table('password_reset_tokens')->insert([
-                'email' =>$user->email,
-                'token' =>$token,
+                'email' => $user->email,
+                'token' => $token,
                 'created_at' => Carbon::now(),
             ]);
         }
@@ -133,35 +133,36 @@ class AuthController extends Controller
 
         $mailConfig = array(
             'recipient_address' => $user->email,
-            'recipient_name' =>$user->name,
+            'recipient_name' => $user->name,
             'subject' => 'Reset Password',
-            'body' =>$mail_body,
+            'body' => $mail_body,
         );
 
-        if(Cmail::send($mailConfig)){
-            return redirect()->route('admin.forgot')->with('success', 'We have a e-mailed your password reset link.'); 
-        }else{
+        if (Cmail::send($mailConfig)) {
+            return redirect()->route('admin.forgot')->with('success', 'We have a e-mailed your password reset link.');
+        } else {
             return redirect()->route('admin.forgot')->with('fail', 'Somthing went wrong. Resetting link not sent. Try again later.');
         }
     }
 
-    public function resetForm(Request $request, $token = null){
+    public function resetForm(Request $request, $token = null)
+    {
         //check if this token exists
         $isTokenExists = DB::table('password_reset_tokens')
-                        ->where('token', $token)
-                        ->first();
+            ->where('token', $token)
+            ->first();
 
-        if(!$isTokenExists){
+        if (!$isTokenExists) {
             return redirect()->route('admin.forgot')->with('fail', 'Invalid token. Request another reset password link.');
-        }else{
+        } else {
             //Check if tokrn is not expired
-            $diffMins = Carbon::createFromDate('Y-m-d H:i:s', $isTokenExists->created_at)
-            ->diffInMinutes(carbon::now());
-            if($diffMins > 15){
+            $diffMins = Carbon::createFromFormat('Y-m-d H:i:s', $isTokenExists->created_at)
+                ->diffInMinutes(Carbon::now());
+            if ($diffMins > 15) {
                 //When token is older than 15 min
-                return redirect()->route('admin.forgot')->with('fail','The password reset link you click has expired. Please request a new link.');
+                return redirect()->route('admin.forgot')->with('fail', 'The password reset link you click has expired. Please request a new link.');
             }
-            
+
             $data = [
                 'pageTitle' => 'Reset Password',
                 'token' => $token,
@@ -171,7 +172,8 @@ class AuthController extends Controller
         }
     }
 
-    public function resetPasswordHandler(Request $request){
+    public function resetPasswordHandler(Request $request)
+    {
         //validate form
         $request->validate([
             'new_password' => 'required|min:5|required_with:new_password_confirmation|same:new_password_confirmation',
@@ -179,8 +181,8 @@ class AuthController extends Controller
         ]);
 
         $dbToken = DB::table('password_reset_tokens')
-                    ->where('token', $request->token)
-                    ->first();
+            ->where('token', $request->token)
+            ->first();
 
         //Get user details
         $user = User::where('email', $dbToken->email)->first();
@@ -192,20 +194,20 @@ class AuthController extends Controller
 
         //Send notifiacation email to this user email address that contains new password
         $data = array(
-            'user' =>$user,
+            'user' => $user,
             'new_password' => $request->new_password,
         );
 
         $mail_body = view('email-templates.password-changes-template', $data)->render();
 
         $emailConfig = array(
-            'recipient_address' =>$user->email,
+            'recipient_address' => $user->email,
             'recipient_name' => $user->name,
             'subject' => 'Password changed seccessfully',
             'body' => $mail_body,
         );
 
-        if(Cmail::send($emailConfig)){
+        if (Cmail::send($emailConfig)) {
             //Delete token from DB
             DB::table('password_reset_tokens')->where([
                 'email' => $dbToken->email,
@@ -213,9 +215,8 @@ class AuthController extends Controller
             ])->delete();
 
             return redirect()->route('admin.login')->with('success', 'Done!, Your password has been changed successfully. Use your new password to login into system.');
-        }else{
-            return redirect()->route('admin.reset_password_form', ['token' => $dbToken->token])->with
-            ('fail', 'Something went wrong. Try again later.');
+        } else {
+            return redirect()->route('admin.reset_password_form', ['token' => $dbToken->token])->with('fail', 'Something went wrong. Try again later.');
         }
     }
 }
