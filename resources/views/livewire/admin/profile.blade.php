@@ -3,13 +3,18 @@
         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
             <div class="pd-20 card-box height-100-p">
                 <div class="profile-photo">
-                    <a href="" class="edit-avatar"><i
-                            class="fa fa-pencil"></i></a>
-                    <img src="{{$user->picture}}" alt="" class="avatar-photo">
+                    <a href="javascript:;"
+                        onclick="event.preventDefault();document.getElementById('profilePictureFile').click();"
+                        class="edit-avatar"><i class="fa fa-pencil"></i></a>
+                    <div>
+                        <img src="{{ $user->picture }}" alt="" class="avatar-photo" id="profilePicturePreview" >
+                    </div>
+                    <input type="file" name="profilePictureFile" id="profilePictureFile" class="d-none"
+                        style="opacity: 0">
                 </div>
-                <h5 class="text-center h5 mb-0">{{$user->name}}</h5>
+                <h5 class="text-center h5 mb-0">{{ $user->name }}</h5>
                 <p class="text-center text-muted font-14">
-                    {{$user->email}}
+                    {{ $user->email }}
                 </p>
                 <div class="profile-social">
                     <h5 class="mb-20 h5 text-blue">Social Links</h5>
@@ -74,46 +79,55 @@
                     <div class="tab height-100-p">
                         <ul class="nav nav-tabs customtab" role="tablist">
                             <li class="nav-item">
-                                <a wire:click="selectTab('personal_details')" class="nav-link {{$tab == 'personal_details' ? 'active' : ''}}" data-toggle="tab" href="#personal_details"
-                                    role="tab">Personal details</a>
+                                <a wire:click="selectTab('personal_details')"
+                                    class="nav-link {{ $tab == 'personal_details' ? 'active' : '' }}" data-toggle="tab"
+                                    href="#personal_details" role="tab">Personal details</a>
                             </li>
                             <li class="nav-item">
-                                <a wire:click="selectTab('update_password')" class="nav-link {{$tab == 'update_password' ? 'active' : ''}}" data-toggle="tab" href="#update_password" role="tab">Update password</a>
+                                <a wire:click="selectTab('update_password')"
+                                    class="nav-link {{ $tab == 'update_password' ? 'active' : '' }}" data-toggle="tab"
+                                    href="#update_password" role="tab">Update password</a>
                             </li>
                             <li class="nav-item">
-                                <a wire:click="selectTab('social_links')" class="nav-link {{$tab == 'social_links' ? 'active' : ''}}" data-toggle="tab" href="#social_links" role="tab">Social Links</a>
+                                <a wire:click="selectTab('social_links')"
+                                    class="nav-link {{ $tab == 'social_links' ? 'active' : '' }}" data-toggle="tab"
+                                    href="#social_links" role="tab">Social Links</a>
                             </li>
                         </ul>
                         <div class="tab-content">
                             <!-- Timeline Tab start -->
-                            <div class="tab-pane fade {{$tab == 'personal_details' ? 'show active' : ''}}" id="personal_details" role="tabpanel">
+                            <div class="tab-pane fade {{ $tab == 'personal_details' ? 'show active' : '' }}"
+                                id="personal_details" role="tabpanel">
                                 <div class="pd-20">
                                     <form wire:submit="updatePersonalDetails()">
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="">Full name</label>
-                                                    <input type="text" class="form-control" wire:model="name" placeholder="Enter full name">
+                                                    <input type="text" class="form-control" wire:model="name"
+                                                        placeholder="Enter full name">
                                                     @error('name')
-                                                        <span class="text-danger">{{$message}}</span>
+                                                        <span class="text-danger">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="">Email</label>
-                                                    <input type="text" class="form-control" wire:model="email" placeholder="Enter email" disabled>
+                                                    <input type="text" class="form-control" wire:model="email"
+                                                        placeholder="Enter email" disabled>
                                                     @error('email')
-                                                        <span class="text-danger">{{$message}}</span>
+                                                        <span class="text-danger">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="">Username</label>
-                                                    <input type="text" class="form-control" wire:model="username" placeholder="Enter username">
+                                                    <input type="text" class="form-control" wire:model="username"
+                                                        placeholder="Enter username">
                                                     @error('username')
-                                                        <span class="text-danger">{{$message}}</span>
+                                                        <span class="text-danger">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                             </div>
@@ -123,7 +137,7 @@
                                                     <textarea wire:model="bio" cols="4" rows="4" class="form-control" placeholder="Type your bio..."></textarea>
                                                 </div>
                                                 @error('bio')
-                                                    <span class="text-danger">{{$message}}</span>
+                                                    <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                         </div>
@@ -135,18 +149,20 @@
                             </div>
                             <!-- Timeline Tab End -->
                             <!-- Tasks Tab start -->
-                            <div class="tab-pane fade {{$tab == 'update_password' ? 'show active' : ''}}" id="update_password" role="tabpanel">
+                            <div class="tab-pane fade {{ $tab == 'update_password' ? 'show active' : '' }}"
+                                id="update_password" role="tabpanel">
                                 <div class="pd-20 profile-task-wrap">
                                     ---- Update Password ----
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade {{$tab == 'social_links' ? 'show active' : ''}}" id="social_links" role="tabpanel">
+                            <div class="tab-pane fade {{ $tab == 'social_links' ? 'show active' : '' }}"
+                                id="social_links" role="tabpanel">
                                 <div class="pd-20 profile-task-wrap">
                                     ---- Social Links ----
                                 </div>
                             </div>
-                            
+
                             <!-- Setting Tab End -->
                         </div>
                     </div>
