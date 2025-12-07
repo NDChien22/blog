@@ -59,4 +59,8 @@ class User extends Authenticatable
     public function getPictureAttribute($value){
         return $value ? asset('/images/users/'.$value) : asset('/images/users/default-avatar.jpg');
     }
+
+    public function social_links(){
+        return $this->belongsTo(UserSocialLink::class, 'id', 'user_id');
+    }
 }
