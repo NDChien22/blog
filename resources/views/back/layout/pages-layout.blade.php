@@ -314,7 +314,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="" class="dropdown-toggle no-arrow">
+                        <a href="{{route('admin.settings')}}" class="dropdown-toggle no-arrow">
                             <span class="micon fa fa-cogs"></span>
                             <span class="mtext">Genaral
                         </a>
