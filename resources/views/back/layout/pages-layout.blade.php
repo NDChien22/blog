@@ -8,9 +8,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Site favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/back/vendors/images/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/back/vendors/images/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/back/vendors/images/favicon-16x16.png" />
+
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="/images/site/{{ isset(settings()->site_favicon) ? settings()->site_favicon : '' }}" />
 
     <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -154,8 +154,8 @@
             </div>
             @livewire('admin.top-user-info')
             <div class="github-link">
-                <a href="https://github.com/dropways/deskapp" target="_blank"><img
-                        src="/back/vendors/images/github.svg" alt="" /></a>
+                <a href="https://github.com/dropways/deskapp" target="_blank"><img src="/back/vendors/images/github.svg"
+                        alt="" /></a>
             </div>
         </div>
     </div>
@@ -258,8 +258,10 @@
     <div class="left-side-bar">
         <div class="brand-logo">
             <a href="/">
-                <img src="/images/site/{{isset(settings()->site_logo) ? settings()->site_logo : ''}}" alt="" class="dark-logo site-logo" />
-                <img src="/images/site/{{isset(settings()->site_logo) ? settings()->site_logo : ''}}" alt="" class="light-logo site_logo" />
+                <img src="/images/site/{{ isset(settings()->site_logo) ? settings()->site_logo : '' }}" alt=""
+                    class="dark-logo site_logo" />
+                <img src="/images/site/{{ isset(settings()->site_logo) ? settings()->site_logo : '' }}" alt=""
+                    class="light-logo site_logo" />
             </a>
             <div class="close-sidebar" data-toggle="left-sidebar-close">
                 <i class="ion-close-round"></i>

@@ -80,6 +80,20 @@
                                 <button type="submit" class="btn btn-primary">Change Logo</button>
                             </form>
                         </div>
+                        <div class="col-md-6">
+                            <h6>Site Favicon</h6>
+                            <div class="mb-2 ml-1" style="max-width: 100px"> 
+                                <img wire:ignore src="" alt="" class="img-thumbnail" data-ijabo-default-img="/images/site/{{isset(settings()->site_favicon) ? settings()->site_favicon : ''}}" id="preview_site_favicon">
+                            </div>
+                            <form action="{{route('admin.update_favicon')}}" method="post" enctype="multipart/form-data" id="updateFaviconForm">
+                                @csrf
+                                <div class="mb-2">
+                                    <input type="file" name="site_favicon" id="" class="form-control">
+                                    <span class="text-danger ml-1"></span>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Change favicon</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

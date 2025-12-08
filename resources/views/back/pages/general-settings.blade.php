@@ -28,49 +28,106 @@
 @push('scripts')
     <script>
         $('input[type="file"][name="site_logo"]').ijaboViewer({
-            preview:'#preview_site_logo',
-            imageShape:'rectangular',
-            allowedExtensions:['png','jpg'],
-            onErrorShape:function(message, element){
+            preview: '#preview_site_logo',
+            imageShape: 'rectangular',
+            allowedExtensions: ['png', 'jpg'],
+            onErrorShape: function(message, element) {
                 alert(message);
             },
-            onInvalidType: function(message, element){
+            onInvalidType: function(message, element) {
                 alert(message);
             },
-            onSuccess:function(message, element){}
+            onSuccess: function(message, element) {}
         });
 
-        $('#updateLogoForm').submit(function(e){
+        $('#updateLogoForm').submit(function(e) {
             e.preventDefault();
             var form = this;
             var inputVal = $(form).find('input[type="file"]').val();
             var errorElement = $(form).find('span.text-danger');
             errorElement.text('');
-            
-            if(inputVal.length > 0){
+
+            if (inputVal.length > 0) {
                 $.ajax({
-                    url:$(form).attr('action'),
-                    method:$(form).attr('method'),
-                    data:new FormData(form),
-                    processData:false,
-                    dataType:'json',
-                    contentType:false,
-                    beforeSend:function(){},
-                    success:function(data){
-                        if(data.status == 1){
+                    url: $(form).attr('action'),
+                    method: $(form).attr('method'),
+                    data: new FormData(form),
+                    processData: false,
+                    dataType: 'json',
+                    contentType: false,
+                    beforeSend: function() {},
+                    success: function(data) {
+                        if (data.status == 1) {
                             $(form)[0].reset();
                             showToast(data.message, 'success');
-                            $('img.site_logo').each(function(){
-                               $(this).attr('src','/'+data.image_path); 
+                            // Update tất cả logo trên trang
+                            $('img.site_logo').each(function() {
+                                $(this).attr('src', '/' + data.image_path);
                             });
-                        }
-                        else{
+                            // Reload trang sau 1.5 giây
+                            setTimeout(function() {
+                                location.reload();
+                            });
+
+                        } else {
                             showToast(data.message, 'error');
                         }
                     }
                 });
-            }else{
-               errorElement.text('Please, select an image file.') 
+            } else {
+                errorElement.text('Please, select an image file.')
+            }
+        });
+
+        $('input[type="file"][name="site_favicon"]').ijaboViewer({
+            preview: 'img#preview_site_favicon',
+            imageShape: 'square',
+            allowedExtensions: ['png', 'jpg', 'ico'],
+            onErrorShape: function(message, element) {
+                alert(message);
+            },
+            onInvalidType: function(message, element) {
+                alert(message);
+            },
+            onSuccess: function(message, element) {}
+        });
+
+        $('#updateFaviconForm').submit(function(e) {
+            e.preventDefault();
+            var form = this;
+            var inputVal = $(form).find('input[type="file"]').val();
+            var errorElement = $(form).find('span.text-danger');
+            errorElement.text('');
+
+            if (inputVal.length > 0) {
+                $.ajax({
+                    url: $(form).attr('action'),
+                    method: $(form).attr('method'),
+                    data: new FormData(form),
+                    processData: false,
+                    dataType: 'json',
+                    contentType: false,
+                    beforeSend: function() {},
+                    success: function(data) {
+                        if (data.status == 1) {
+                            $(form)[0].reset();
+                            var linkElement = document.querySelector('link[rel="icon"]');
+                            linkElement.href = '/' + data.image_path;
+                            showToast(data.message, 'success');
+                            // Update favicon
+                            $('link[rel="icon"]').attr('href', '/' + data.image_path);
+                            // Reload trang sau 1.5 giây
+                            setTimeout(function() {
+                                location.reload();
+                            });
+
+                        } else {
+                            showToast(data.message, 'error');
+                        }
+                    }
+                });
+            } else {
+                errorElement.text('Please, select an image file.')
             }
         });
     </script>
