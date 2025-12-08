@@ -257,9 +257,9 @@
 
     <div class="left-side-bar">
         <div class="brand-logo">
-            <a href="index.html">
-                <img src="/back/vendors/images/deskapp-logo.svg" alt="" class="dark-logo" />
-                <img src="/back/vendors/images/deskapp-logo-white.svg" alt="" class="light-logo" />
+            <a href="/">
+                <img src="/images/site/{{isset(settings()->site_logo) ? settings()->site_logo : ''}}" alt="" class="dark-logo site-logo" />
+                <img src="/images/site/{{isset(settings()->site_logo) ? settings()->site_logo : ''}}" alt="" class="light-logo site_logo" />
             </a>
             <div class="close-sidebar" data-toggle="left-sidebar-close">
                 <i class="ion-close-round"></i>
@@ -314,7 +314,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{route('admin.settings')}}" class="dropdown-toggle no-arrow">
+                        <a href="{{ route('admin.settings') }}" class="dropdown-toggle no-arrow">
                             <span class="micon fa fa-cogs"></span>
                             <span class="mtext">Genaral
                         </a>
@@ -345,6 +345,7 @@
     <script src="/back/vendors/scripts/process.js"></script>
     <script src="/back/vendors/scripts/layout-settings.js"></script>
     <script src="/extra-assets/js/toast.js"></script>
+    <script src="/extra-assets/js/ijaboViewer.min.js"></script>
     @kropifyScripts
     @stack('scripts')
     @livewireScripts
