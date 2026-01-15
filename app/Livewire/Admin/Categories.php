@@ -54,6 +54,8 @@ class Categories extends Component
 
     public function render()
     {
-        return view('livewire.admin.categories');
+        return view('livewire.admin.categories',[
+            'pcategories' => ParentCategory::orderBy('ordering', 'ASC')->get(),
+        ]);
     }
 }

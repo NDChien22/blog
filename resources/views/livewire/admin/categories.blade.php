@@ -20,10 +20,11 @@
                             <th>Actions</th>
                         </thead>
                         <tbody>
+                            @forelse ($pcategories as $item)
                             <tr>
-                                <td>1</td>
-                                <td>P. Cat 1</td>
-                                <td>4</td>
+                                <td>{{ $item->id }}</td>
+                                <td>{{ $item->name }}</td>
+                                <td>-</td>
                                 <td>
                                     <div class="table-actions">
                                         <a href="" class="text-primary mx-2">
@@ -35,6 +36,14 @@
                                     </div>
                                 </td>
                             </tr>
+
+                            @empty
+                            <tr>
+                                <td colspan="4">
+                                    <span class="text-danger">No parent categories found.</span>
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
