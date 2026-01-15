@@ -11,6 +11,9 @@ class Categories extends Component
     public $isUpdateParentCategoryMode = false;
     public $pcategory_id, $pcategory_name;
 
+    public $isUpdateCategoryMode = false;
+    public $category_id, $parent = 0, $category_name; 
+
     protected $listeners = [
         'updateCategoryOrdering',
         'deleteCategoryAction'
@@ -111,6 +114,37 @@ class Categories extends Component
         }
     }
 
+    public function addCategory()
+    {
+        $this->category_id = null;
+        $this->parent = 0;
+        $this->category_name = null;
+        $this->isUpdateCategoryMode = false;
+        $this->showCategoryModalForm();
+    }
+
+    public function createCategory(){
+        $this->validate([
+            'category_name' => 'required|unique:categories,name',
+        ], [
+            'category_name.required' => 'Category field is required.',
+            'category_name.unique' => 'Category name already exists.',
+        ]);
+
+        //Store new category
+        $category = new Category();
+        $category->name = $this->category_name;
+        $category->parent = $this->parent;
+        $saved = $category->save();
+
+        if ($saved) {
+            $this->hideCategoryModalForm();
+            $this->dispatch('showToastr', ['type' => 'success', 'message' => 'Category created successfully.']);
+        } else {
+            $this->dispatch('showToastr', ['type' => 'error', 'message' => 'Failed to create category.']);
+        }
+    }
+
     public function showParentCategoryModalForm()
     {
         $this->resetErrorBag();
@@ -122,6 +156,18 @@ class Categories extends Component
         $this->dispatch('hideParentCategoryModalForm');
         $this->isUpdateParentCategoryMode = false;
         $this->pcategory_id = $this->pcategory_name = null;
+    }
+
+    public function showCategoryModalForm(){
+        $this->resetErrorBag();
+        $this->dispatch('showCategoryModalForm');
+    }
+
+    public function hideCategoryModalForm(){
+        $this->dispatch('hideCategoryModalForm');
+        $this->isUpdateCategoryMode = false;
+        $this->category_id = $this->category_name = null;
+        $this->parent = 0;
     }
 
     public function render()

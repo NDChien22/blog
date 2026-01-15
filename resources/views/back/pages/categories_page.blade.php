@@ -30,7 +30,6 @@
                     $(this).removeClass('updated');
                 });
 
-                // alert(positions);
                 Livewire.dispatch('updateCategoryOrdering', [positions]);
             }
         });
@@ -50,6 +49,14 @@
                     Livewire.dispatch('deleteCategoryAction', [id]);
                 }
             });
+        });
+
+        window.addEventListener('showCategoryModalForm', function() {
+            $('#category_modal').modal('show');
+        });
+
+        window.addEventListener('hideCategoryModalForm', function() {
+            $('#category_modal').modal('hide');
         });
     </script>
 @endpush
