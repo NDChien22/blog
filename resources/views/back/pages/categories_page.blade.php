@@ -32,8 +32,24 @@
 
                 // alert(positions);
                 Livewire.dispatch('updateCategoryOrdering', [positions]);
-
             }
+        });
+
+        window.addEventListener('deleteParentCategory', function(event){
+            var id = event.detail.id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to delete this parent category?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Delete',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.dispatch('deleteCategoryAction', [id]);
+                }
+            });
         });
     </script>
 @endpush

@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="/extra-assets/jquery-ui-1.14.1/jquery-ui.min.css">
     <link rel="stylesheet" href="/extra-assets/jquery-ui-1.14.1/jquery-ui.structure.min.css">
     <link rel="stylesheet" href="/extra-assets/jquery-ui-1.14.1/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="/back/src/plugins/sweetalert2/sweetalert2.min.css">
     @kropifyStyles
     @stack('stylesheets')
     @livewireStyles
@@ -157,8 +158,8 @@
             </div>
             @livewire('admin.top-user-info')
             <div class="github-link">
-                <a href="https://github.com/dropways/deskapp" target="_blank"><img src="/back/vendors/images/github.svg"
-                        alt="" /></a>
+                <a href="https://github.com/dropways/deskapp" target="_blank"><img
+                        src="/back/vendors/images/github.svg" alt="" /></a>
             </div>
         </div>
     </div>
@@ -349,6 +350,7 @@
     <script src="/back/vendors/scripts/script.min.js"></script>
     <script src="/back/vendors/scripts/process.js"></script>
     <script src="/back/vendors/scripts/layout-settings.js"></script>
+    <script src="/back/src/plugins/sweetalert2/sweetalert2.all.min.js"></script>
     <script src="/extra-assets/js/toast.js"></script>
     <script src="/extra-assets/js/ijaboViewer.min.js"></script>
     <script src="/extra-assets/jquery-ui-1.14.1/jquery-ui.min.js"></script>
