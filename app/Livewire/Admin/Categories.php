@@ -17,7 +17,8 @@ class Categories extends Component
     protected $listeners = [
         'updateParentCategoryOrdering',
         'updateCategoryOrdering',
-        'deleteCategoryAction'
+        'deleteParentCategoryAction',
+        'deleteCategoryAction',
     ];
 
     public function addParentCategory()
@@ -87,7 +88,7 @@ class Categories extends Component
         $this->dispatch('deleteParentCategory', id: $id);
     }
 
-    public function deleteCategoryAction($id)
+    public function deleteParentCategoryAction($id)
     {
         $pcategory = ParentCategory::findOrFail($id);
 
@@ -187,6 +188,26 @@ class Categories extends Component
                 'ordering' => $new_positon,
             ]);
             $this->dispatch('showToastr', ['type' => 'success', 'message' => 'Categories reordered successfully.']);
+        }
+    }
+
+    public function deleteCategory($id){
+        $this->dispatch('deleteCategory', id: $id);
+    }
+
+    public function deleteCategoryAction($id)
+    {
+        $category = Category::findOrFail($id);
+
+        //check if category has posts
+
+        //delete category
+        $deleted = $category->delete();
+
+        if ($deleted) {
+            $this->dispatch('showToastr', ['type' => 'success', 'message' => 'Category deleted successfully.']);
+        } else {
+            $this->dispatch('showToastr', ['type' => 'error', 'message' => 'Failed to delete category.']);
         }
     }
 
