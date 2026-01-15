@@ -174,6 +174,7 @@ class Categories extends Component
     {
         return view('livewire.admin.categories', [
             'pcategories' => ParentCategory::orderBy('ordering', 'ASC')->get(),
+            'categories' => Category::orderBy('ordering', 'ASC')->get(),
         ]);
     }
 }
