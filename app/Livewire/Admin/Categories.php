@@ -15,6 +15,7 @@ class Categories extends Component
     public $category_id, $parent = 0, $category_name; 
 
     protected $listeners = [
+        'updateParentCategoryOrdering',
         'updateCategoryOrdering',
         'deleteCategoryAction'
     ];
@@ -102,7 +103,7 @@ class Categories extends Component
         }
     }
 
-    public function updateCategoryOrdering($positions)
+    public function updateParentCategoryOrdering($positions)
     {
         foreach ($positions as $positon) {
             $index = $positon[0];
@@ -174,6 +175,18 @@ class Categories extends Component
             $this->dispatch('showToastr', ['type' => 'success', 'message' => 'Category updated successfully.']);
         } else {
             $this->dispatch('showToastr', ['type' => 'error', 'message' => 'Failed to update category.']);
+        }
+    }
+
+    public function updateCategoryOrdering($positions)
+    {
+        foreach ($positions as $positon) {
+            $index = $positon[0];
+            $new_positon = $positon[1];
+            Category::where('id', $index)->update([
+                'ordering' => $new_positon,
+            ]);
+            $this->dispatch('showToastr', ['type' => 'success', 'message' => 'Categories reordered successfully.']);
         }
     }
 
