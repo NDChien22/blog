@@ -19,9 +19,11 @@
                             <th>N. of categories</th>
                             <th>Actions</th>
                         </thead>
-                        <tbody>
+                        <tbody id="sortable_parent_categories">
                             @forelse ($pcategories as $item)
-                            <tr>
+
+
+                            <tr data-index="{{ $item->id }}" data-ordering="{{$item->ordering}}">
                                 <td>{{ $item->id }}</td>
                                 <td>{{ $item->name }}</td>
                                 <td>-</td>

@@ -23,6 +23,9 @@
     <link rel="stylesheet" type="text/css" href="/back/vendors/styles/icon-font.min.css" />
     <link rel="stylesheet" type="text/css" href="/back/vendors/styles/style.css" />
     <link rel="stylesheet" href="/extra-assets/css/toast.css">
+    <link rel="stylesheet" href="/extra-assets/jquery-ui-1.14.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="/extra-assets/jquery-ui-1.14.1/jquery-ui.structure.min.css">
+    <link rel="stylesheet" href="/extra-assets/jquery-ui-1.14.1/jquery-ui.theme.min.css">
     @kropifyStyles
     @stack('stylesheets')
     @livewireStyles
@@ -348,6 +351,7 @@
     <script src="/back/vendors/scripts/layout-settings.js"></script>
     <script src="/extra-assets/js/toast.js"></script>
     <script src="/extra-assets/js/ijaboViewer.min.js"></script>
+    <script src="/extra-assets/jquery-ui-1.14.1/jquery-ui.min.js"></script>
     @kropifyScripts
     @stack('scripts')
     @livewireScripts
