@@ -40,7 +40,7 @@
                         </div>
                         <div class="form-group">
                             <label for=""><b>Content</b>:</label>
-                            <textarea name="content" id="" cols="30" rows="10" class="form-control"
+                            <textarea name="content" id="content" cols="30" rows="10" class="form-control"
                                 placeholder="Enter post content here...">{{ old('content') }}</textarea>
                             <span class="text-danger error-text content_error"></span>
                         </div>
@@ -113,10 +113,90 @@
 @endsection
 @push('stylesheets')
     <link rel="stylesheet" href="/back/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css">
+    <link rel="stylesheet" href="/ckeditor5/ckeditor5/ckeditor5.css">
+    <link rel="stylesheet" href="/ckeditor5/ckeditor5/ckeditor5-content.css">
+    <link rel="stylesheet" href="/ckeditor5/ckeditor5/ckeditor5-editor.css">
+    <style>
+        /* Increase visible height for the content editor */
+        #content,
+        .ck-editor__editable_inline {
+            min-height: 300px;
+        }
+    </style>
 @endpush
 @push('scripts')
     <script src="/back/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+    <!-- Local CKEditor 5 UMD build to avoid ESM export issues -->
+    <script src="/ckeditor5/ckeditor5/ckeditor5.umd.js"></script>
     <script>
+        $(function() {
+            // Initialize CKEditor 5
+            const {
+                ClassicEditor,
+                Essentials,
+                Bold,
+                Italic,
+                Font,
+                Paragraph,
+                Heading,
+                Link,
+                List,
+                BlockQuote,
+                Image,
+                ImageUpload,
+                ImageToolbar,
+                ImageCaption,
+                ImageStyle,
+                ImageResize,
+                Table,
+                TableToolbar,
+                MediaEmbed,
+                Alignment
+            } = CKEDITOR;
+
+            let contentEditor = null;
+
+            ClassicEditor
+                .create(document.querySelector('#content'), {
+                    licenseKey: 'GPL', // Use GPL license for open source projects
+                    plugins: [
+                        Essentials, Bold, Italic, Font, Paragraph, Heading, Link, List,
+                        BlockQuote, Image, ImageUpload, ImageToolbar, ImageCaption,
+                        ImageStyle, ImageResize, Table, TableToolbar, MediaEmbed, Alignment
+                    ],
+                    toolbar: {
+                        items: [
+                            'heading', '|',
+                            'bold', 'italic', '|',
+                            'link', 'bulletedList', 'numberedList', '|',
+                            'alignment', '|',
+                            'blockQuote', 'insertTable', '|',
+                            'imageUpload', 'mediaEmbed', '|',
+                            'undo', 'redo'
+                        ]
+                    },
+                    image: {
+                        toolbar: [
+                            'imageStyle:inline',
+                            'imageStyle:block',
+                            'imageStyle:side',
+                            '|',
+                            'toggleImageCaption',
+                            'imageTextAlternative'
+                        ]
+                    },
+                    table: {
+                        contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+                    }
+                })
+                .then(editor => {
+                    contentEditor = editor;
+                    window.contentEditor = editor; // optional global
+                })
+                .catch(error => {
+                    console.error('CKEditor init failed:', error);
+                });
+
         $('input[name="featured_image"]').ijaboViewer({
             preview: '#featured_image_preview',
             imageShape: 'rectangular',
@@ -130,38 +210,42 @@
             onSuccess: function(message, element) {}
         });
 
-        // Create a post
-        $('#addPostForm').on('submit', function(e) {
-            e.preventDefault();
-            var form = this;
-            var formData = new FormData(form);
+            // Create a post
+            $('#addPostForm').on('submit', function(e) {
+                e.preventDefault();
+                const form = this;
+                const content = contentEditor.getData();
+                const formData = new FormData(form);
+                        formData.append('content', content);
 
-            $.ajax({
-                url: $(form).attr('action'),
-                method: $(form).attr('method'),
-                data: formData,
-                processData: false,
-                dataType: 'json',
-                contentType: false,
-                beforeSend: function() {
-                    $(form).find('span.error-text').text('');
-                },
-                success: function(data) {
-                    if (data.status == 1) {
-                        $(form)[0].reset();
-                        $('img#featured_image_preview').attr('src', '');
-                        $('input[name="tags"]').tagsinput('removeAll');
-                        showToast(data.message, 'success');
-                    } else {
-                        showToast(data.message, 'error');
+                $.ajax({
+                    url: $(form).attr('action'),
+                    method: $(form).attr('method'),
+                    data: formData,
+                    processData: false,
+                    dataType: 'json',
+                    contentType: false,
+                    beforeSend: function() {
+                        $(form).find('span.error-text').text('');
+                    },
+                    success: function(data) {
+                        if (data.status == 1) {
+                            $(form)[0].reset();
+                            contentEditor.setData('');
+                            $('img#featured_image_preview').attr('src', '');
+                            $('input[name="tags"]').tagsinput('removeAll');
+                            showToast(data.message, 'success');
+                        } else {
+                            showToast(data.message, 'error');
+                        }
+                    },
+                    error: function(data) {
+                        $.each(data.responseJSON.errors, function(prefix, val) {
+                            $(form).find('span.' + prefix + '_error').text(val[0]);
+                        });
                     }
-                },
-                error: function(data) {
-                    $.each(data.responseJSON.errors, function(prefix, val) {
-                        $(form).find('span.' + prefix + '_error').text(val[0]);
-                    })
-                }
-            })
-        })
+                });
+            });
+        });
     </script>
 @endpush
