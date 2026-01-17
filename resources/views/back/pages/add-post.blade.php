@@ -40,7 +40,7 @@
                         </div>
                         <div class="form-group">
                             <label for=""><b>Content</b>:</label>
-                            <textarea name="content" id="content" cols="30" rows="10" class="form-control"
+                            <textarea name="content" id="" cols="30" rows="10" class="ckeditor form-control"
                                 placeholder="Enter post content here...">{{ old('content') }}</textarea>
                             <span class="text-danger error-text content_error"></span>
                         </div>
@@ -56,7 +56,7 @@
                         </div>
                         <div class="form-group">
                             <label for=""><b>Post meta description</b>:</label>
-                            <textarea name="meta_description" id="" cols="30" rows="10" class="form-control"
+                            <textarea name="meta_description" id="" cols="30" rows="10" class=" form-control"
                                 placeholder="Enter post meta description here...">{{ old('meta_description') }}</textarea>
                         </div>
                     </div>
@@ -113,90 +113,56 @@
 @endsection
 @push('stylesheets')
     <link rel="stylesheet" href="/back/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css">
-    <link rel="stylesheet" href="/ckeditor5/ckeditor5/ckeditor5.css">
-    <link rel="stylesheet" href="/ckeditor5/ckeditor5/ckeditor5-content.css">
-    <link rel="stylesheet" href="/ckeditor5/ckeditor5/ckeditor5-editor.css">
-    <style>
-        /* Increase visible height for the content editor */
-        #content,
-        .ck-editor__editable_inline {
-            min-height: 300px;
-        }
-    </style>
 @endpush
 @push('scripts')
     <script src="/back/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
-    <!-- Local CKEditor 5 UMD build to avoid ESM export issues -->
-    <script src="/ckeditor5/ckeditor5/ckeditor5.umd.js"></script>
+    
+    <!-- Suppress CKEditor console messages BEFORE loading ckeditor.js -->
     <script>
-        $(function() {
-            // Initialize CKEditor 5
-            const {
-                ClassicEditor,
-                Essentials,
-                Bold,
-                Italic,
-                Font,
-                Paragraph,
-                Heading,
-                Link,
-                List,
-                BlockQuote,
-                Image,
-                ImageUpload,
-                ImageToolbar,
-                ImageCaption,
-                ImageStyle,
-                ImageResize,
-                Table,
-                TableToolbar,
-                MediaEmbed,
-                Alignment
-            } = CKEDITOR;
-
-            let contentEditor = null;
-
-            ClassicEditor
-                .create(document.querySelector('#content'), {
-                    licenseKey: 'GPL', // Use GPL license for open source projects
-                    plugins: [
-                        Essentials, Bold, Italic, Font, Paragraph, Heading, Link, List,
-                        BlockQuote, Image, ImageUpload, ImageToolbar, ImageCaption,
-                        ImageStyle, ImageResize, Table, TableToolbar, MediaEmbed, Alignment
-                    ],
-                    toolbar: {
-                        items: [
-                            'heading', '|',
-                            'bold', 'italic', '|',
-                            'link', 'bulletedList', 'numberedList', '|',
-                            'alignment', '|',
-                            'blockQuote', 'insertTable', '|',
-                            'imageUpload', 'mediaEmbed', '|',
-                            'undo', 'redo'
-                        ]
-                    },
-                    image: {
-                        toolbar: [
-                            'imageStyle:inline',
-                            'imageStyle:block',
-                            'imageStyle:side',
-                            '|',
-                            'toggleImageCaption',
-                            'imageTextAlternative'
-                        ]
-                    },
-                    table: {
-                        contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
-                    }
-                })
-                .then(editor => {
-                    contentEditor = editor;
-                    window.contentEditor = editor; // optional global
-                })
-                .catch(error => {
-                    console.error('CKEditor init failed:', error);
-                });
-
+        // Override console methods to suppress CKEditor messages
+        (function() {
+            var originalError = console.error;
+            var originalWarn = console.warn;
+            var originalLog = console.log;
+            
+            console.error = function() {
+                var message = Array.from(arguments).join(' ');
+                // Block all CKEditor messages
+                if (message.indexOf('CKEditor') > -1 || message.indexOf('ckeditor') > -1) {
+                    return;
+                }
+                originalError.apply(console, arguments);
+            };
+            
+            console.warn = function() {
+                var message = Array.from(arguments).join(' ');
+                if (message.indexOf('CKEditor') > -1 || message.indexOf('ckeditor') > -1) {
+                    return;
+                }
+                originalWarn.apply(console, arguments);
+            };
+            
+            console.log = function() {
+                var message = Array.from(arguments).join(' ');
+                if (message.indexOf('CKEditor') > -1 || message.indexOf('ckeditor') > -1) {
+                    return;
+                }
+                originalLog.apply(console, arguments);
+            };
+        })();
+    </script>
+    
+    <script src="/ckeditor/ckeditor.js"></script>
+    <script>
+        // Disable CKEditor notifications
+        CKEDITOR.on('instanceReady', function(evt) {
+            var editor = evt.editor;
+            if (editor.showNotification) {
+                editor.showNotification = function() { return false; };
+            }
+        });
+    </script>
+    <script>
         $('input[name="featured_image"]').ijaboViewer({
             preview: '#featured_image_preview',
             imageShape: 'rectangular',
@@ -210,42 +176,41 @@
             onSuccess: function(message, element) {}
         });
 
-            // Create a post
-            $('#addPostForm').on('submit', function(e) {
-                e.preventDefault();
-                const form = this;
-                const content = contentEditor.getData();
-                const formData = new FormData(form);
-                        formData.append('content', content);
+        // Create a post
+        $('#addPostForm').on('submit', function(e) {
+            e.preventDefault();
+            var form = this;
+            var content = CKEDITOR.instances.content.getData();
+            var formData = new FormData(form);
+                formData.append('content',content);
 
-                $.ajax({
-                    url: $(form).attr('action'),
-                    method: $(form).attr('method'),
-                    data: formData,
-                    processData: false,
-                    dataType: 'json',
-                    contentType: false,
-                    beforeSend: function() {
-                        $(form).find('span.error-text').text('');
-                    },
-                    success: function(data) {
-                        if (data.status == 1) {
-                            $(form)[0].reset();
-                            contentEditor.setData('');
-                            $('img#featured_image_preview').attr('src', '');
-                            $('input[name="tags"]').tagsinput('removeAll');
-                            showToast(data.message, 'success');
-                        } else {
-                            showToast(data.message, 'error');
-                        }
-                    },
-                    error: function(data) {
-                        $.each(data.responseJSON.errors, function(prefix, val) {
-                            $(form).find('span.' + prefix + '_error').text(val[0]);
-                        });
+            $.ajax({
+                url: $(form).attr('action'),
+                method: $(form).attr('method'),
+                data: formData,
+                processData: false,
+                dataType: 'json',
+                contentType: false,
+                beforeSend: function() {
+                    $(form).find('span.error-text').text('');
+                },
+                success: function(data) {
+                    if (data.status == 1) {
+                        $(form)[0].reset();
+                        CKEDITOR.instances.content.setData('');
+                        $('img#featured_image_preview').attr('src', '');
+                        $('input[name="tags"]').tagsinput('removeAll');
+                        showToast(data.message, 'success');
+                    } else {
+                        showToast(data.message, 'error');
                     }
-                });
-            });
-        });
+                },
+                error: function(data) {
+                    $.each(data.responseJSON.errors, function(prefix, val) {
+                        $(form).find('span.' + prefix + '_error').text(val[0]);
+                    })
+                }
+            })
+        })
     </script>
 @endpush
