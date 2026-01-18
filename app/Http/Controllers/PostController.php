@@ -97,7 +97,7 @@ class PostController extends Controller
     //All Posts
     public function allPosts(Request $request){
         $data = [
-            'pagetitle' => 'Posts',
+            'pageTitle' => 'Posts',
 
         ];
 
