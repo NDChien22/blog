@@ -3,7 +3,8 @@
         <div class="row mb-20">
             <div class="col-md-4">
                 <label for="search"><b class="text-secondary">Search</b></label>
-                <input wire:model.live="search" id="search" type="text" class="form-control" placeholder="Search posts ...">
+                <input wire:model.live="search" id="search" type="text" class="form-control"
+                    placeholder="Search posts ...">
             </div>
             @if (auth()->user()->type == 'superAdmin')
                 <div class="col-md-2">
@@ -74,10 +75,12 @@
                                 @endif
                             </td>
                             <td class="table-actions">
-                                <a href="{{ route('admin.edit_post', ['id' => $item->id]) }}" data-color="#265ed7" style="color: rgb(38, 94, 215)">
+                                <a href="{{ route('admin.edit_post', ['id' => $item->id]) }}" data-color="#265ed7"
+                                    style="color: rgb(38, 94, 215)">
                                     <i class="icon-copy dw dw-edit2"></i>
                                 </a>
-                                <a href="" data-color="#e95959" style="color: rgb(233, 89, 89)">
+                                <a href="javascript:;" wire:click="deletePost({{ $item->id }})" data-color="#e95959"
+                                    style="color: rgb(233, 89, 89)">
                                     <i class="icon-copy dw dw-delete-3"></i>
                                 </a>
                             </td>

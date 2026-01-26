@@ -8,6 +8,7 @@ use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 use App\Models\ParentCategory;
+use Illuminate\Support\Facades\File;
 
 class Posts extends Component
 {
@@ -31,6 +32,10 @@ class Posts extends Component
         'sortBy' => ['except' => 'desc'],
     ];
 
+    protected $listeners = [
+        'deletePostAction'
+    ];
+
     public function updatedSearch(){
         $this->resetPage();
     }
@@ -49,6 +54,7 @@ class Posts extends Component
     }
 
     public function mount(){
+        $this->author = Auth::user()->type == "superAdmin" ? Auth::user()->id : '';
         $this->post_visibilities = $this->visibility == 'public' ? 1 : 0;
         //Prepare Categories selection
         $categories_html = '';
@@ -78,6 +84,41 @@ class Posts extends Component
             }
         }
         $this->categories_html = $categories_html;
+    }
+
+    public function deletePost($id){
+        $this->dispatch('deletePost', ['id' => $id]);
+    }
+
+    public function deletePostAction($id){
+        $post = Post::findOrFail($id);
+        $path = "images/posts/";
+        $resize_ppath = $path.'resized/';
+        $old_featured_image = $post->featured_image;
+
+        //delete featured image
+        if($old_featured_image != '' && File::exists(public_path($path.$old_featured_image))){
+            File::delete(public_path($path.$old_featured_image));
+
+            //delete resize image
+            if(File::exists(public_path($resize_ppath.'resized_'.$old_featured_image))){
+                File::delete(public_path($resize_ppath.'resized_'.$old_featured_image));
+            }
+
+            //delete thumbnail image
+            if(File::exists(public_path($resize_ppath.'thumb_'.$old_featured_image))){
+                File::delete(public_path($resize_ppath.'thumb_'.$old_featured_image));
+            }
+        }
+
+        //delete post
+        $delete = $post->delete();
+
+        if($delete){
+            $this->dispatch('showToastr', ['type' => 'success', 'message' => 'Post deleted successfully!']);
+        }else{
+            $this->dispatch('showToastr', ['type' => 'error', 'message' => 'Something went wrong!']);
+        }
     }
 
     public function render()
